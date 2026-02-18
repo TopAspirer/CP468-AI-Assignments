@@ -52,7 +52,7 @@ class FifteenPuzzle(Puzzle):
              8,  9, 10, 11,
             12, 13, 14, 15)
 
-    # No other changes needed — all methods (astar, h1, h2, h3, generate_random_state,
+    # No other changes needed; all methods (astar, h1, h2, h3, generate_random_state,
     # run_benchmark) are inherited from Puzzle and work generically for any SIZE.
 
 
