@@ -1,11 +1,11 @@
 # CP468 Assignment #1 — Part II: A* Puzzle Solver
 
 ## Group 02 Members
-Ali Khairreddin,
+Ali Khairreddin,  
 Adam Narciso,  
 Daniel Gonzalez,  
 Lloyd Nsambu,  
-Maor Ethan Chernitzky,
+Maor Ethan Chernitzky,  
 Roneet Topiwala,  
 Zoya Adnan 
 
