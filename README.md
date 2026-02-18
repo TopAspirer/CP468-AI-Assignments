@@ -49,7 +49,7 @@ All heuristics and A* are dimension-agnostic.
 
 ## How to Run
 
-### Option 1 — Run everything (recommended)
+### Option 1 — Run everything
 Runs both 8-puzzle and 15-puzzle benchmarks and prints the combined results table:
 ```bash
 python results.py
@@ -102,7 +102,7 @@ Puzzle Type    Heuristic      Avg Steps to Solution   Avg Nodes Expanded
 ## Heuristic Details
 
 ### h1 — Misplaced Tiles
-Counts tiles not in their goal position (blank excluded).
+Counts tiles not in their goal position excluding blanks.
 Simple but weak — only a loose lower bound on actual moves needed.
 
 **Important limitation on the 15-puzzle:** h1 is too weak to reliably guide A*
