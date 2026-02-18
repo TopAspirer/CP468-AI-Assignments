@@ -2,10 +2,12 @@
 
 ## Group 02 Members
 Ali Khairreddin,
+
 Adam Narciso,  
 Daniel Gonzalez,  
 Lloyd Nsambu,  
 Maor Ethan Chernitzky,
+
 Roneet Topiwala,  
 Zoya Adnan 
 
