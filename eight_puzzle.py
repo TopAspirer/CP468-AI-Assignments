@@ -29,7 +29,6 @@ class Puzzle:
     Subclasses override SIZE and GOAL to adapt to different puzzle dimensions.
     """
 
-    # --- Override these in subclasses ---
     SIZE = 3          # grid is SIZE x SIZE
     GOAL = (0, 1, 2,  # 0 represents the blank tile
             3, 4, 5,
@@ -48,12 +47,12 @@ class Puzzle:
     # Move generation
     # -------------------------------------------------------------------------
 
-    def get_neighbors(self, state):
+    def get_neighbours(self, state):
         """
         Return a list of states reachable from the current state
         by sliding a tile into the blank position.
         """
-        neighbors = []
+        neighbours = []
         blank = state.index(0)
         row, col = blank // self.n, blank % self.n
 
@@ -63,13 +62,13 @@ class Puzzle:
         for dr, dc in moves:
             nr, nc = row + dr, col + dc
             if 0 <= nr < self.n and 0 <= nc < self.n:
-                neighbor = list(state)
+                neighbour = list(state)
                 swap_idx = nr * self.n + nc
                 # Slide the tile at (nr, nc) into the blank
-                neighbor[blank], neighbor[swap_idx] = neighbor[swap_idx], neighbor[blank]
-                neighbors.append(tuple(neighbor))
+                neighbour[blank], neighbour[swap_idx] = neighbour[swap_idx], neighbour[blank]
+                neighbours.append(tuple(neighbour))
 
-        return neighbors
+        return neighbours
 
     # -------------------------------------------------------------------------
     # Heuristics
@@ -110,7 +109,7 @@ class Puzzle:
 
         A linear conflict occurs when two tiles tj and tk are in their goal row
         (or column), but tj is to the right of tk while tj's goal is to the
-        left of tk's goal — they must pass each other, costing at least 2 extra moves.
+        left of tk's goal; they must pass each other, costing at least 2 extra moves.
 
         Admissible: adds only admissible extra cost on top of Manhattan distance.
         Dominates h2.
@@ -168,17 +167,17 @@ class Puzzle:
 
         Parameters
         ----------
-        start      : tuple    — initial puzzle state
-        heuristic  : callable — h(state) -> int
-        node_limit : int|None — if set, abort after this many expansions
+        start      : tuple;     initial puzzle state
+        heuristic  : callable;  h(state) -> int
+        node_limit : int|None; if set, abort after this many expansions
                                 and return (-1, nodes_expanded). Used to
                                 prevent individual hard puzzles from hanging.
 
         Returns
         -------
-        steps          : int — length of solution path (number of moves),
+        steps          : int; length of solution path (number of moves),
                                or -1 if node_limit was reached
-        nodes_expanded : int — number of nodes popped from the open list
+        nodes_expanded : int; number of nodes popped from the open list
         """
         # Priority queue entries: (f, tie_breaker, g, state)
         # tie_breaker ensures states with equal f are ordered consistently
@@ -211,13 +210,13 @@ class Puzzle:
                 return g, nodes_expanded
 
             # Expand neighbours
-            for neighbor in self.get_neighbors(state):
+            for neighbour in self.get_neighbours(state):
                 new_g = g + 1  # each move costs 1
-                if new_g < g_cost.get(neighbor, math.inf):
-                    g_cost[neighbor] = new_g
-                    f_new = new_g + heuristic(neighbor)
+                if new_g < g_cost.get(neighbour, math.inf):
+                    g_cost[neighbour] = new_g
+                    f_new = new_g + heuristic(neighbour)
                     counter += 1
-                    heapq.heappush(open_list, (f_new, counter, new_g, neighbor))
+                    heapq.heappush(open_list, (f_new, counter, new_g, neighbour))
 
         # No solution found (should not happen for valid solvable states)
         return -1, nodes_expanded
@@ -238,11 +237,11 @@ class Puzzle:
         prev_state = None
 
         for _ in range(num_moves):
-            neighbors = self.get_neighbors(tuple(state))
+            neighbours = self.get_neighbours(tuple(state))
             # Avoid immediately reversing the last move
-            if prev_state is not None and tuple(prev_state) in neighbors:
-                neighbors = [n for n in neighbors if n != tuple(prev_state)]
-            chosen = random.choice(neighbors)
+            if prev_state is not None and tuple(prev_state) in neighbours:
+                neighbours = [n for n in neighbours if n != tuple(prev_state)]
+            chosen = random.choice(neighbours)
             prev_state = state
             state = list(chosen)
 
@@ -259,8 +258,8 @@ class Puzzle:
 
         Parameters
         ----------
-        min_h : int — minimum h3 value (avoids near-solved states)
-        max_h : int — maximum h3 value (avoids states too hard for A*)
+        min_h : int; minimum h3 value (avoids near-solved states)
+        max_h : int; maximum h3 value (avoids states too hard for A*)
         """
         while True:
             # Shuffle depth: enough to randomize, not so much it drifts too far
@@ -281,14 +280,14 @@ class Puzzle:
 
         Puzzle generation uses generate_controlled_state() to ensure puzzles
         are neither trivially easy nor impossibly hard for A*. A per-puzzle
-        node limit is enforced so no single puzzle hangs the benchmark —
-        any puzzle that hits the limit is skipped and replaced.
+        node limit is enforced so no single puzzle hangs the benchmark
+        for any puzzle that hits the limit is skipped and replaced.
 
         Parameters
         ----------
-        num_puzzles : int — how many random puzzles to generate and solve
-        num_moves   : int — (unused, kept for API compatibility)
-        seed        : int — random seed for reproducibility
+        num_puzzles : int; how many random puzzles to generate and solve
+        num_moves   : int; (unused, kept for API compatibility)
+        seed        : int; random seed for reproducibility
         """
         random.seed(seed)
 
@@ -324,7 +323,7 @@ class Puzzle:
             for i, puzzle in enumerate(puzzles):
                 steps, nodes = self.astar(puzzle, h, node_limit=node_limit)
                 if steps == -1:
-                    # Node limit hit — skip this puzzle, don't include in averages
+                    # Node limit hit, skips this puzzle, don't include in averages
                     skipped += 1
                 else:
                     results[name]['steps'].append(steps)
