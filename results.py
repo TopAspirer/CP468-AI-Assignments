@@ -33,10 +33,10 @@ def run_and_collect(puzzle_instance, puzzle_label, num_puzzles=100, num_moves=No
     Parameters
     ----------
     puzzle_instance : Puzzle or FifteenPuzzle
-    puzzle_label    : str — e.g. "8-puzzle" or "15-puzzle"
-    num_puzzles     : int — number of random puzzles to solve
-    num_moves       : int — shuffle depth (defaults per puzzle type if None)
-    seed            : int — random seed
+    puzzle_label    : str; e.g. "8-puzzle" or "15-puzzle"
+    num_puzzles     : int; number of random puzzles to solve
+    num_moves       : int; shuffle depth (defaults per puzzle type if None)
+    seed            : int; random seed
 
     Returns
     -------
@@ -84,7 +84,7 @@ def print_table(all_rows):
     """
     print("\n")
     print("=" * 80)
-    print("  RESULTS TABLE — A* Performance on 8-puzzle and 15-puzzle")
+    print("  RESULTS TABLE; A* Performance on 8-puzzle and 15-puzzle")
     print("=" * 80)
     header = (f"{'Puzzle Type':<14} {'Heuristic':<12} {'Avg Steps':>12} "
               f"{'Avg Nodes Expanded':>22} {'Solved/100':>12}")
@@ -131,7 +131,7 @@ def print_analysis(all_rows):
             print(f"  {row['heuristic']}: {row['avg_nodes']:.1f} avg nodes expanded{tag}")
 
         print(f"\n  Summary:")
-        print(f"  - h1 (Misplaced Tiles): weakest heuristic — loose lower bound,")
+        print(f"  - h1 (Misplaced Tiles): weakest heuristic; loose lower bound,")
         print(f"    A* explores far more nodes. On the 15-puzzle, h1 frequently")
         print(f"    fails to solve instances within the node limit. This is")
         print(f"    EXPECTED and demonstrates h1's practical inadequacy for")
@@ -140,7 +140,7 @@ def print_analysis(all_rows):
         print(f"    states). Significantly fewer nodes expanded, solves all")
         print(f"    benchmark instances reliably.")
         print(f"  - h3 (Linear Conflict): dominates h2 (h3 >= h2 for all states).")
-        print(f"    Tightest lower bound of the three — fewest nodes expanded")
+        print(f"    Tightest lower bound of the three; fewest nodes expanded")
         print(f"    and fastest solve times across both puzzle sizes.")
         if puzzle_label == '15-puzzle':
             h1_row = next(r for r in rows if r['heuristic'] == 'h1')
