@@ -5,47 +5,29 @@ fifteen_puzzle.py
 
 FifteenPuzzle inherits ALL logic from the Puzzle base class:
   - A* search
-  - h1 (Misplaced Tiles)
-  - h2 (Manhattan Distance)
-  - h3 (Linear Conflict)
+  - h1
+  - h2 
+  - h3
   - Random state generation
   - Benchmarking
 
 The ONLY changes from the 8-puzzle are:
   - SIZE = 4  (4x4 grid instead of 3x3)
   - GOAL    (15 tiles instead of 8)
-
-This directly demonstrates how the 15-puzzle is a modification of the 8-puzzle,
-as required by the assignment.
-
-Usage:
-    python fifteen_puzzle.py
-    (runs 100 random puzzles, prints average stats for h1, h2, h3)
 """
 
 from eight_puzzle import Puzzle
 
 
-# =============================================================================
-# FifteenPuzzle — extends EightPuzzle by overriding size and goal state only
-# =============================================================================
 
 class FifteenPuzzle(Puzzle):
     """
-    15-puzzle (4x4 sliding tile puzzle).
-
-    Inherits all A* logic, heuristics, and benchmarking from Puzzle (eight_puzzle.py).
-    Only overrides SIZE and GOAL to adapt the base class to a 4x4 grid.
-
-    Goal state layout:
-         0  1  2  3
-         4  5  6  7
-         8  9 10 11
-        12 13 14 15
-    where 0 is the blank tile.
+    15-puzzle (4x4 sliding tile puzzle):
+      -Inherits all A* logic, heuristics, and benchmarking from Puzzle (eight_puzzle.py).
+      -Only overrides SIZE and GOAL to adapt the base class to a 4x4 grid.
     """
 
-    # --- Override: grid is now 4x4 with 15 tiles ---
+    # 4x4 grid with 15 tiles
     SIZE = 4
     GOAL = ( 0,  1,  2,  3,
              4,  5,  6,  7,
@@ -56,10 +38,7 @@ class FifteenPuzzle(Puzzle):
     # run_benchmark) are inherited from Puzzle and work generically for any SIZE.
 
 
-# =============================================================================
 # Entry point — run 15-puzzle benchmark
-# =============================================================================
-
 if __name__ == '__main__':
     print("=" * 55)
     print("15-Puzzle Benchmark (A* with h1, h2, h3)")

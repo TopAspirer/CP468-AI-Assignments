@@ -3,25 +3,16 @@ eight_puzzle.py
 ---------------
 Base implementation of the 8-puzzle solver using A* search.
 Heuristics implemented:
-  h1 - Misplaced Tiles (Russell & Norvig, 3rd ed., p. 102)
-  h2 - Manhattan Distance (Russell & Norvig, 3rd ed., p. 102)
-  h3 - Linear Conflict (Hansson et al., 1992) — admissible, dominates h2
+  h1 - Misplaced Tiles 
+  h2 - Manhattan Distance
+  h3 - Linear Conflict
 
-This module defines the Puzzle base class. FifteenPuzzle (in fifteen_puzzle.py)
-inherits from this class and overrides only the size and goal state.
-
-Usage:
-    python eight_puzzle.py
-    (runs 100 random puzzles, prints average stats for h1, h2, h3)
 """
 
 import heapq
 import random
 import math
 
-# =============================================================================
-# Puzzle Base Class
-# =============================================================================
 
 class Puzzle:
     """
@@ -38,14 +29,14 @@ class Puzzle:
         self.n = self.SIZE
         self.goal = self.GOAL
         # Precompute goal positions for O(1) heuristic lookup
+
         # goal_pos[tile] = (row, col)
         self.goal_pos = {}
         for idx, tile in enumerate(self.goal):
             self.goal_pos[tile] = (idx // self.n, idx % self.n)
 
-    # -------------------------------------------------------------------------
+    
     # Move generation
-    # -------------------------------------------------------------------------
 
     def get_neighbours(self, state):
         """
@@ -78,8 +69,6 @@ class Puzzle:
         """
         Misplaced Tiles heuristic.
         Counts the number of tiles not in their goal position (blank excluded).
-        Admissible: every misplaced tile needs at least 1 move.
-        (Russell & Norvig, 3rd ed., p. 102)
         """
         count = 0
         for idx, tile in enumerate(state):
@@ -117,7 +106,7 @@ class Puzzle:
         manhattan = self.h2(state)
         conflicts = 0
 
-        # --- Row conflicts ---
+        # check for row conflicts
         for row in range(self.n):
             # Collect tiles in this row that also belong in this row
             row_tiles = []
@@ -138,7 +127,7 @@ class Puzzle:
                     if (ci < cj and gi > gj) or (ci > cj and gi < gj):
                         conflicts += 1
 
-        # --- Column conflicts ---
+        # check for column conflicts
         for col in range(self.n):
             col_tiles = []
             for row in range(self.n):
@@ -156,32 +145,25 @@ class Puzzle:
                         conflicts += 1
 
         return manhattan + 2 * conflicts
-
-    # -------------------------------------------------------------------------
-    # A* Search
-    # -------------------------------------------------------------------------
+        
+    
+    
+    # A * Search
 
     def astar(self, start, heuristic, node_limit=None):
         """
         A* search algorithm.
 
-        Parameters
-        ----------
-        start      : tuple;     initial puzzle state
-        heuristic  : callable;  h(state) -> int
-        node_limit : int|None; if set, abort after this many expansions
-                                and return (-1, nodes_expanded). Used to
-                                prevent individual hard puzzles from hanging.
-
-        Returns
-        -------
-        steps          : int; length of solution path (number of moves),
-                               or -1 if node_limit was reached
-        nodes_expanded : int; number of nodes popped from the open list
+        Parameters:
+        - start      
+        - heuristic  
+        - node_limit 
+        
+        Returns:
+        - steps: int; number of moves
+        - nodes_expanded : int; number of nodes popped from the open list
         """
-        # Priority queue entries: (f, tie_breaker, g, state)
-        # tie_breaker ensures states with equal f are ordered consistently
-        # without comparing tuples (which would compare state values)
+        # Use Priority queue entries (heaps): (f, tie_breaker, g, state)
         counter = 0
         h_start = heuristic(start)
         open_list = [(h_start, counter, 0, start)]  # (f, counter, g, state)
@@ -218,21 +200,16 @@ class Puzzle:
                     counter += 1
                     heapq.heappush(open_list, (f_new, counter, new_g, neighbour))
 
-        # No solution found (should not happen for valid solvable states)
+        # No solution found
         return -1, nodes_expanded
 
-    # -------------------------------------------------------------------------
-    # Random reachable state generation
-    # -------------------------------------------------------------------------
-
+    # Random Reachable State Generations
     def generate_random_state(self, num_moves=100):
         """
-        Generate a random reachable state by performing `num_moves` random
-        moves from the goal state. This guarantees the state is solvable.
-
-        A higher num_moves value increases the chance of a well-shuffled puzzle,
-        but the actual solution depth may vary.
+        Generate a random reachable state by performing num_moves random
+        moves from the goal state. 
         """
+
         state = list(self.goal)
         prev_state = None
 
@@ -250,16 +227,8 @@ class Puzzle:
     def generate_controlled_state(self, min_h=5, max_h=25):
         """
         Generate a random reachable state whose h3 value falls within
-        [min_h, max_h]. This controls puzzle difficulty by ensuring
-        no puzzle is trivially easy or impossibly hard for A*.
+        [min_h, max_h]. 
 
-        We use h3 as a proxy for difficulty since it is our tightest
-        admissible lower bound on actual solution cost.
-
-        Parameters
-        ----------
-        min_h : int; minimum h3 value (avoids near-solved states)
-        max_h : int; maximum h3 value (avoids states too hard for A*)
         """
         while True:
             # Shuffle depth: enough to randomize, not so much it drifts too far
@@ -269,87 +238,34 @@ class Puzzle:
             if min_h <= h <= max_h:
                 return state
 
-    # -------------------------------------------------------------------------
+   
     # Benchmarking
-    # -------------------------------------------------------------------------
-
     def run_benchmark(self, num_puzzles=100, num_moves=50, seed=42):
-        """
-        Solve `num_puzzles` random puzzles with each of h1, h2, h3.
-        Returns a dict with average steps and nodes expanded per heuristic.
-
-        Puzzle generation uses generate_controlled_state() to ensure puzzles
-        are neither trivially easy nor impossibly hard for A*. A per-puzzle
-        node limit is enforced so no single puzzle hangs the benchmark
-        for any puzzle that hits the limit is skipped and replaced.
-
-        Parameters
-        ----------
-        num_puzzles : int; how many random puzzles to generate and solve
-        num_moves   : int; (unused, kept for API compatibility)
-        seed        : int; random seed for reproducibility
-        """
+        """Solve num_puzzles with h1, h2, h3. Returns dict of avg_steps, avg_nodes, solved per heuristic."""
         random.seed(seed)
-
-        # Node limit per puzzle per heuristic.
-        # 8-puzzle (SIZE=3): generous limit, puzzles are always fast.
-        # 15-puzzle (SIZE=4): tight limit to prevent hangs on hard states.
         node_limit = 500_000 if self.SIZE == 4 else None
-
-        # Difficulty bounds for generate_controlled_state:
-        # Keep h3 in [5, 20] for 8-puzzle, [8, 20] for 15-puzzle.
-        # The upper bound of 20 for 15-puzzle keeps puzzles manageable
-        # even for h1, which is the weakest heuristic.
-        min_h = 8 if self.SIZE == 4 else 5
-        max_h = 20 if self.SIZE == 4 else 20
-
-        heuristics = {
-            'h1': self.h1,
-            'h2': self.h2,
-            'h3': self.h3,
-        }
-
+        min_h, max_h = (8, 20) if self.SIZE == 4 else (5, 20)
+        heuristics = {'h1': self.h1, 'h2': self.h2, 'h3': self.h3}
         results = {name: {'steps': [], 'nodes': []} for name in heuristics}
 
-        # Generate puzzles once, reuse across all heuristics for fair comparison.
-        # Each puzzle is guaranteed to be in the controlled difficulty range.
-        print(f"  Generating {num_puzzles} controlled puzzles (h3 in [{min_h}, {max_h}])...")
-        puzzles = [self.generate_controlled_state(min_h=min_h, max_h=max_h)
-                   for _ in range(num_puzzles)]
+        puzzles = [self.generate_controlled_state(min_h=min_h, max_h=max_h) for _ in range(num_puzzles)]
 
         for name, h in heuristics.items():
-            print(f"  Running {name} on {num_puzzles} puzzles...", flush=True)
-            skipped = 0
-            for i, puzzle in enumerate(puzzles):
+            for puzzle in puzzles:
                 steps, nodes = self.astar(puzzle, h, node_limit=node_limit)
-                if steps == -1:
-                    # Node limit hit, skips this puzzle, don't include in averages
-                    skipped += 1
-                else:
+                if steps != -1:
                     results[name]['steps'].append(steps)
                     results[name]['nodes'].append(nodes)
-                # Progress indicator every 25 puzzles
-                if (i + 1) % 25 == 0:
-                    print(f"    [{name}] Completed {i + 1}/{num_puzzles}"
-                          f" (skipped so far: {skipped})", flush=True)
-            if skipped > 0:
-                print(f"    [{name}] Skipped {skipped} puzzles (node limit reached)")
-                if name == 'h1' and self.SIZE == 4:
-                    print(f"    [{name}] NOTE: h1 skipping puzzles on the 15-puzzle is EXPECTED.")
-                    print(f"    [{name}]       h1's loose lower bound forces A* to explore an")
-                    print(f"    [{name}]       exponentially larger search space. This is a key")
-                    print(f"    [{name}]       finding demonstrating why stronger heuristics matter.")
-                    
-        # Compute averages over successfully solved puzzles
+
         averages = {}
         for name in heuristics:
-            solved = results[name]['steps']
-            n = len(solved)
-            avg_steps = sum(solved) / n if n > 0 else 0
-            avg_nodes = sum(results[name]['nodes']) / n if n > 0 else 0
-            averages[name] = {'avg_steps': avg_steps, 'avg_nodes': avg_nodes,
-                              'solved': n}
-
+            s, n = results[name]['steps'], results[name]['nodes']
+            count = len(s)
+            averages[name] = {
+                'avg_steps': sum(s) / count if count else 0,
+                'avg_nodes': sum(n) / count if count else 0,
+                'solved': count,
+            }
         return averages
 
 
