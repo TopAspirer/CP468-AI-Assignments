@@ -32,7 +32,7 @@ def run_and_collect(puzzle_instance, puzzle_label, num_puzzles=100, num_moves=No
     if num_moves is None:
         num_moves = 50 if puzzle_instance.SIZE == 3 else 40
 
-    print(f"Running {puzzle_label} benchmark...")
+    print(f"\nRunning {puzzle_label} benchmark...")
     print(f"  Puzzles: {num_puzzles} | Shuffle moves: {num_moves} | Seed: {seed}")
     print(f"{'='*55}")
 
