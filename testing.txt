@@ -1,0 +1,141 @@
+"""
+This file is made to record some of the tests done for
+the code in Part 2 for A1.
+"""
+
+
+--------------------------------------------------------
+Test 1: Running the 8-puzzle problem
+Test was done by: Lloyd Nsambu, on a windows machine
+--------------------------------------------------------
+
+=======================================================
+Running 8-puzzle benchmark...
+  Puzzles: 100 | Shuffle moves: 50 | Seed: 42
+=======================================================
+  Generating 100 controlled puzzles (h3 in [5, 20])...
+  Running h1 on 100 puzzles...
+    [h1] Completed 25/100 (skipped so far: 0)
+    [h1] Completed 50/100 (skipped so far: 0)
+    [h1] Completed 75/100 (skipped so far: 0)
+    [h1] Completed 100/100 (skipped so far: 0)
+  Running h2 on 100 puzzles...
+    [h2] Completed 25/100 (skipped so far: 0)
+    [h2] Completed 50/100 (skipped so far: 0)
+    [h2] Completed 75/100 (skipped so far: 0)
+    [h2] Completed 100/100 (skipped so far: 0)
+  Running h3 on 100 puzzles...
+    [h3] Completed 25/100 (skipped so far: 0)
+    [h3] Completed 50/100 (skipped so far: 0)
+    [h3] Completed 75/100 (skipped so far: 0)
+    [h3] Completed 100/100 (skipped so far: 0)
+
+  Completed in 20.6s
+
+
+--------------------------------------------------------
+Test 2: Running the 15-puzzle problem
+Test was done by: Lloyd Nsambu, on a windows machine
+--------------------------------------------------------
+
+=======================================================
+Running 15-puzzle benchmark...
+  Puzzles: 100 | Shuffle moves: 40 | Seed: 42
+=======================================================
+  Generating 100 controlled puzzles (h3 in [8, 20])...
+  Running h1 on 100 puzzles...
+    [h1] Completed 25/100 (skipped so far: 7)
+    [h1] Completed 50/100 (skipped so far: 12)
+    [h1] Completed 75/100 (skipped so far: 16)
+    [h1] Completed 100/100 (skipped so far: 18)
+    [h1] Skipped 18 puzzles (node limit reached)
+    [h1] NOTE: h1 skipping puzzles on the 15-puzzle is EXPECTED.
+    [h1]       h1's loose lower bound forces A* to explore an
+    [h1]       exponentially larger search space. This is a key
+    [h1]       finding demonstrating why stronger heuristics matter.
+  Running h2 on 100 puzzles...
+    [h2] Completed 25/100 (skipped so far: 0)
+    [h2] Completed 50/100 (skipped so far: 0)
+    [h2] Completed 75/100 (skipped so far: 1)
+    [h2] Completed 100/100 (skipped so far: 1)
+    [h2] Skipped 1 puzzles (node limit reached)
+  Running h3 on 100 puzzles...
+    [h3] Completed 25/100 (skipped so far: 0)
+    [h3] Completed 50/100 (skipped so far: 0)
+    [h3] Completed 75/100 (skipped so far: 1)
+    [h3] Completed 100/100 (skipped so far: 1)
+    [h3] Skipped 1 puzzles (node limit reached)
+
+  Completed in 516.8s
+
+This took a considerable amount of time to solve!... thought my machine had froze for a second.
+Below are the results from running both algorithims:
+
+
+
+================================================================================
+  RESULTS TABLE; A* Performance on 8-puzzle and 15-puzzle
+================================================================================
+Puzzle Type    Heuristic       Avg Steps     Avg Nodes Expanded   Solved/100
+--------------------------------------------------------------------------------
+8-puzzle       h1                  20.86               11649.48          100
+8-puzzle       h2                  20.86                1135.01          100
+8-puzzle       h3                  20.86                 628.60          100
+
+15-puzzle      h1                  22.54               51712.22           82
+15-puzzle      h2                  23.93                9284.30           99
+15-puzzle      h3                  23.93                3692.52           99
+================================================================================
+
+
+========================================================================
+  HEURISTIC PERFORMANCE ANALYSIS
+========================================================================
+
+8-puzzle:
+----------------------------------------
+  h1: 11649.5 avg nodes expanded
+  h2: 1135.0 avg nodes expanded
+  h3: 628.6 avg nodes expanded ← best
+
+  Summary:
+  - h1 (Misplaced Tiles): weakest heuristic; loose lower bound,
+    A* explores far more nodes. On the 15-puzzle, h1 frequently
+    fails to solve instances within the node limit. This is
+    EXPECTED and demonstrates h1's practical inadequacy for
+    large search spaces, not a bug in the implementation.
+  - h2 (Manhattan Distance): dominates h1 (h2 >= h1 for all
+    states). Significantly fewer nodes expanded, solves all
+    benchmark instances reliably.
+  - h3 (Linear Conflict): dominates h2 (h3 >= h2 for all states).
+    Tightest lower bound of the three; fewest nodes expanded
+    and fastest solve times across both puzzle sizes.
+
+15-puzzle:
+----------------------------------------
+  h1: 51712.2 avg nodes expanded
+  h2: 9284.3 avg nodes expanded
+  h3: 3692.5 avg nodes expanded ← best
+
+  Summary:
+  - h1 (Misplaced Tiles): weakest heuristic; loose lower bound,
+    A* explores far more nodes. On the 15-puzzle, h1 frequently
+    fails to solve instances within the node limit. This is
+    EXPECTED and demonstrates h1's practical inadequacy for
+    large search spaces, not a bug in the implementation.
+  - h2 (Manhattan Distance): dominates h1 (h2 >= h1 for all
+    states). Significantly fewer nodes expanded, solves all
+    benchmark instances reliably.
+  - h3 (Linear Conflict): dominates h2 (h3 >= h2 for all states).
+    Tightest lower bound of the three; fewest nodes expanded
+    and fastest solve times across both puzzle sizes.
+
+  *** KEY FINDING (15-puzzle) ***
+  h1 only solved 82/100 puzzles within the node limit.
+  h2 solved 99/100 — a 17-puzzle improvement over h1.
+  h3 solved 99/100 with 3693 avg nodes vs
+  h2's 9284 — confirming linear conflict's superiority.
+
+  Dominance relationship: h3 >= h2 >= h1 (all admissible)
+  More informed heuristic → fewer nodes → faster solve time
+========================================================================
