@@ -68,7 +68,7 @@ def print_table(all_rows):
     print("  RESULTS TABLE; A* Performance on 8-puzzle and 15-puzzle")
     print("=" * 80)
     header = (f"{'Puzzle Type':<14} {'Heuristic':<12} {'Avg Steps':>12} "
-              f"{'Avg Nodes Expanded':>22}")
+              f"{'Avg Nodes Expanded':>22} {'Solved/100':>12}")
     print(header)
     print("-" * 80)
 
@@ -83,6 +83,7 @@ def print_table(all_rows):
             f"{row['heuristic']:<12} "
             f"{row['avg_steps']:>12.2f} "
             f"{row['avg_nodes']:>22.2f} "
+            f"{row['solved']:>12.2f}"
         )
 
     print("=" * 80)
