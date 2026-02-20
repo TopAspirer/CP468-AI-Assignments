@@ -81,7 +81,6 @@ class Puzzle:
         Manhattan Distance heuristic.
         Sum of horizontal + vertical distances of each tile from its goal position.
         Admissible: each tile needs at least as many moves as its Manhattan distance.
-        (Russell & Norvig, 3rd ed., p. 102)
         """
         total = 0
         for idx, tile in enumerate(state):
